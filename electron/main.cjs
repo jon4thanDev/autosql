@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain, shell } = require("electron");
 const path = require("path");
 require("./diskSpace.cjs");
 
@@ -15,6 +15,10 @@ app.whenReady().then(() => {
       nodeIntegration: false,
       contextIsolation: true,
     },
+  });
+
+  ipcMain.on("open-path", (event, path) => {
+    shell.openPath(path);
   });
 
   const startUrl = app.isPackaged

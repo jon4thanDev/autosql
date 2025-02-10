@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 declare global {
   interface Window {
     electronAPI: {
+      isElectron: boolean;
+      openPath(id: string): unknown;
       getDiskSpace: (drive: string) => Promise<number>;
     };
   }
@@ -24,6 +26,7 @@ import {
   MoreHorizontal,
   Percent,
 } from "lucide-react";
+import { toast } from "../hooks/use-toast";
 
 const data = [
   {
@@ -211,9 +214,7 @@ const columns = [
   },
   {
     id: "actions",
-    cell: ({ row }) => {
-      const payment = row.original;
-
+    cell: () => {
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -228,11 +229,30 @@ const columns = [
           <DropdownMenuContent align="end">
             {/* <DropdownMenuLabel>Actions</DropdownMenuLabel> */}
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+              onClick={() => {
+                try {
+                  console.log("window type: ", window.electronAPI?.isElectron);
+
+                  if (window.electronAPI?.isElectron) {
+                    window.electronAPI.openPath("C:\\");
+                  } else {
+                    throw new TypeError(
+                      "This action is not supported on browser."
+                    );
+                  }
+                } catch (error) {
+                  console.error(error);
+                  toast({
+                    description: error.message,
+                    duration: 3000,
+                  });
+                }
+              }}
               className={`cursor-pointer ${styles.viewDriveBtn}`}
             >
               View Drive
             </DropdownMenuItem>
+
             {/* <DropdownMenuSeparator />
             <DropdownMenuItem>View customer</DropdownMenuItem>
             <DropdownMenuItem>View payment details</DropdownMenuItem> */}
