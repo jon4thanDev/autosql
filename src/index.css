@@ -1,0 +1,140 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Geist";
+  src: url("./assets/fonts/Geist-VariableFont_wght.ttf") format("truetype");
+  font-weight: 400 900;
+  font-style: normal;
+}
+
+body {
+  font-family: "Geist", sans-serif;
+  color: var(--foreground);
+  background-color: var(--background);
+}
+
+:root {
+  --background: #ffffff;
+  --background-hover: #f8f8f8;
+  --foreground: #0a0a0a;
+  --foreground-hover: #333333;
+  --card: #ffffff;
+  --card-foreground: #0a0a0a;
+  --card-border-color: #0a0a0a;
+  --popover: #ffffff;
+  --popover-foreground: #0a0a0a;
+  --primary: #1a1a1a;
+  --primary-foreground: #fafafa;
+  --secondary: #e4e4e4;
+  --secondary-foreground: #1a1a1a;
+  --muted: #dadada;
+  --muted-foreground: #666666;
+  --accent: #f2f2f2;
+  --accent-foreground: #1a1a1a;
+  --destructive: #d43c3c;
+  --destructive-foreground: #fafafa;
+  --border: #e5e5e5;
+  --input: #e5e5e5;
+  --ring: #0a0a0a;
+
+  --button-fill-background: #0a0a0a;
+
+  --cancel-background: #f44336;
+  --cancel-text-color: #ffffff;
+  --cancel-border-color: #f44336;
+  --cancel-hover-background: #d32f2f;
+  --cancel-hover-text-color: #ffffff;
+  --cancel-hover-transform: scale(1.05);
+
+  --chart-1: #e44d26;
+  --chart-2: #2e8b57;
+  --chart-3: #1e3a5f;
+  --chart-4: #f4b400;
+  --chart-5: #ff9800;
+  --radius: 0.5rem;
+
+  --sidebar-background: #f1f1f1;
+  --sidebar-foreground: #404040;
+  --sidebar-primary: #1a1a1a;
+  --sidebar-hover-background: #e2e2e2;
+  --sidebar-primary-foreground: #fafafa;
+  --sidebar-accent: #f2f2f2;
+  --sidebar-accent-foreground: #1a1a1a;
+  --sidebar-border: #dae0e6;
+  --sidebar-ring: #007aff;
+  --sidebar-tooltip-hover-background: #131313;
+  --sidebar-tooltip-hover-foreground: #fafafa;
+
+  --dropdown-background: #ffffff;
+  --dropdown-foreground: #0a0a0a;
+  --dropdown-border: #e5e5e5;
+  --dropdown-hover-background: #e7e7e7;
+  --dropdown-hover-foreground: #1a1a1a;
+
+  --button-fill-background: #131313;
+  --button-fill-foreground: #fafafa;
+  --button-ghost-background: #ffffff;
+  --button-ghost-hover-background: #eeeeee;
+  --button-ghost-foreground: #131313;
+}
+
+.dark {
+  --background: #131313;
+  --background-hover: #1e1e1e;
+  --foreground: #fafafa;
+  --foreground-hover: #d6d6d6;
+  --card: #0a0a0a;
+  --card-foreground: #fafafa;
+  --popover: #0a0a0a;
+  --popover-foreground: #fafafa;
+  --primary: #fafafa;
+  --primary-foreground: #1a1a1a;
+  --secondary: #2a2a2a;
+  --secondary-foreground: #fafafa;
+  --muted: #2a2a2a;
+  --muted-foreground: #a3a3a3;
+  --accent: #2a2a2a;
+  --accent-foreground: #fafafa;
+  --destructive: #8b2222;
+  --destructive-foreground: #fafafa;
+  --border: #2a2a2a;
+  --input: #2a2a2a;
+  --ring: #d6d6d6;
+
+  --cancel-background: #f44336;
+  --cancel-text-color: #ffffff;
+  --cancel-border-color: #f44336;
+  --cancel-hover-background: #d32f2f;
+  --cancel-hover-text-color: #ffffff;
+  --cancel-hover-transform: scale(1.05);
+
+  --chart-1: #0066ff;
+  --chart-2: #008b8b;
+  --chart-3: #e69500;
+  --chart-4: #9370db;
+  --chart-5: #ff4081;
+
+  --sidebar-background: #1a1a1a;
+  --sidebar-foreground: #f2f2f2;
+  --sidebar-hover-background: #1d1d1d;
+  --sidebar-primary: #1769aa;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #2a2a2a;
+  --sidebar-accent-foreground: #f2f2f2;
+  --sidebar-border: #2a2a2a;
+  --sidebar-ring: #007aff;
+  --sidebar-tooltip-hover-background: #f2f2f2;
+  --sidebar-tooltip-hover-foreground: #0a0a0a;
+
+  --dropdown-background: #1a1a1a;
+  --dropdown-foreground: #fafafa;
+  --dropdown-border: #2a2a2a;
+  --dropdown-hover-background: #2a2a2a;
+  --dropdown-hover-foreground: #ffffff;
+
+  --button-fill-background: #fafafa;
+  --button-fill-foreground: #131313;
+  --button-ghost-background: #131313;
+  --button-ghost-foreground: #fafafa;
+  --button-ghost-hover-background: #1e1e1e;
+}

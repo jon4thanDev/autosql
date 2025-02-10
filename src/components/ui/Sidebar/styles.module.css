@@ -1,0 +1,49 @@
+.navContainer {
+  background-color: var(--sidebar-background);
+}
+
+.toggleButton,
+.navButtons {
+  background-color: transparent;
+  color: var(--muted-foreground);
+}
+
+.navButtons {
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.navButtons span {
+  transition: transform 0.2s ease-in-out;
+}
+
+.navButtons:hover span {
+  transform: translateX(3px); /* Move text slightly to the right */
+}
+
+.toggleButton:hover,
+.navButtons:hover {
+  color: var(--secondary-foreground);
+  background-color: var(--sidebar-hover-background);
+}
+
+.tooltipContent {
+  font-size: 0.8rem;
+  font-weight: 600;
+  background-color: var(--sidebar-tooltip-hover-background);
+  color: var(--sidebar-tooltip-hover-foreground);
+  padding: 8px;
+  opacity: 0;
+  transform: translateX(5px); /* Start slightly lower */
+  animation: slideIn 0.1s ease forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
