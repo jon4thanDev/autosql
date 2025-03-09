@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 declare global {
   interface Window {
     electronAPI: {
+      getLocalIP(): unknown;
       isElectron: boolean;
       openPath(id: string): unknown;
       getDiskSpace: (drive: string) => Promise<number>;
@@ -252,6 +253,19 @@ const columns = [
             >
               View Drive
             </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={async () => {
+                await fetch(
+                  "http://localhost:5000/api/v1/scheduler/download?server=ABRASOFT-PC1\\MSSQLSERVER01&user=sa&password=09289314391tan&database=AutoSQL&backupDir=C:/Backups&zipDir=C:/Compressed&zipPassword=12345",
+                  {
+                    method: "GET",
+                  }
+                );
+              }}
+              className={`cursor-pointer ${styles.viewDriveBtn}`}
+            >
+              Test archive
+            </DropdownMenuItem>
 
             {/* <DropdownMenuSeparator />
             <DropdownMenuItem>View customer</DropdownMenuItem>
@@ -269,7 +283,18 @@ export default function Home() {
   useEffect(() => {
     const getDriveSpace = async () => {
       try {
-        const freeSpacePercentage = await window.electronAPI.getDiskSpace("D:");
+        const backendDomain =
+          process.env.NODE_ENV === "development"
+            ? "http://localhost:5000"
+            : "http://127.0.0.1:5000";
+        const drive = await fetch(`${backendDomain}/api/v1/dashboard/drive`, {
+          method: "GET",
+        })
+          .then(async (response) => await response.json())
+          .then((driveObj) => driveObj.drive);
+        const freeSpacePercentage = await window.electronAPI.getDiskSpace(
+          drive
+        );
         setDriveSpace(100 - freeSpacePercentage);
       } catch (error) {
         console.error("Error getting drive space:", error);
