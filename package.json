@@ -1,5 +1,5 @@
 {
-  "name": "electron-app",
+  "name": "auto-save",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,7 +7,8 @@
   "author": "jonathan",
   "description": "Database automation tool",
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS=--experimental-modules concurrently \"vite\" \"electron .\"",
+    "dev": "cross-env NODE_OPTIONS=--experimental-modules concurrently \"vite\" \"electron .\" \" npm run run:server\"",
+    "run:server": "npx kill-port 5000 && nodemon --watch src/api --ext ts --exec tsx src/api/server.ts",
     "build": "vite build && electron-builder",
     "start": "electron-forge start --config=forge.config.cjs",
     "lint": "eslint .",
@@ -27,20 +28,25 @@
     "@tailwindcss/postcss": "^4.0.4",
     "@tailwindcss/vite": "^4.0.4",
     "@tanstack/react-table": "^8.20.6",
+    "archiver": "^7.0.1",
     "check-disk-space": "^3.4.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cors": "^2.8.5",
     "electron-squirrel-startup": "^1.0.1",
+    "express": "^4.21.2",
     "lucide-react": "^0.474.0",
+    "msnodesqlv8": "^4.5.0",
+    "mssql": "^11.0.1",
     "next-themes": "^0.4.4",
     "react": "^19.0.0",
     "react-bootstrap": "^2.10.9",
     "react-dom": "^19.0.0",
     "react-router": "^7.1.5",
     "react-router-dom": "^7.1.5",
-    "shadcn-ui": "^0.9.4",
     "tailwind-merge": "^3.0.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "tsx": "^4.19.3"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.6.1",
@@ -52,7 +58,7 @@
     "@electron-forge/plugin-fuses": "^7.6.1",
     "@electron/fuses": "^1.8.0",
     "@eslint/js": "^9.19.0",
-    "@types/node": "^22.13.1",
+    "@types/node": "^22.13.7",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@types/react-router-dom": "^5.3.3",
@@ -66,10 +72,28 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.18",
     "globals": "^15.14.0",
+    "nodemon": "^3.1.9",
     "postcss": "^8.5.1",
     "tailwindcss": "^4.0.4",
+    "ts-node": "^10.9.2",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.22.0",
     "vite": "^6.1.0"
+  },
+  "build": {
+    "appId": "com.example.app",
+    "productName": "autoSave",
+    "directories": {
+      "buildResources": "assets"
+    },
+    "mac": {
+      "icon": "assets/icon.icns"
+    },
+    "win": {
+      "icon": "assets/icon.ico"
+    },
+    "linux": {
+      "icon": "assets/icon.png"
+    }
   }
 }

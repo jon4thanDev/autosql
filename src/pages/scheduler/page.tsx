@@ -21,26 +21,32 @@ import {
 } from "../../components/ui/Select";
 import { useToast } from "../../hooks/use-toast";
 import { Link } from "react-router-dom";
+import { fetchAPI } from "../../features/scheduler/utils/apiRequest";
 
 const daysOfWeek = [
-  { label: "S", id: "s1" },
-  { label: "M", id: "m" },
-  { label: "T", id: "t1" },
-  { label: "W", id: "w" },
-  { label: "T", id: "t2" },
-  { label: "F", id: "f" },
-  { label: "S", id: "s2" },
+  { label: "S", id: "sunday" },
+  { label: "M", id: "monday" },
+  { label: "T", id: "tuesday" },
+  { label: "W", id: "wednesday" },
+  { label: "T", id: "thursday" },
+  { label: "F", id: "friday" },
+  { label: "S", id: "saturday" },
 ];
 
 export default function Scheduler() {
   const [path, setPath] = useState<string>("");
+  const [dbInput, setDbInput] = useState<string>("");
+  const [server, setServer] = useState<string>("");
+  const [user, setUser] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [backupPassword, setBackupPassword] = useState<string>("");
   const [schedule, setSchedule] = useState<string>("daily");
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [error, setError] = useState<string>("");
 
   const { toast } = useToast();
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!path) {
       setError("Path is required.");
       return;
@@ -54,10 +60,136 @@ export default function Scheduler() {
             .join(", ")}`
         : `${schedule.charAt(0).toUpperCase() + schedule.slice(1)} schedule`;
 
+    const localIP = await window.electronAPI.getLocalIP();
+    const backendDomain =
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:5000"
+        : `http://${localIP}:5000`;
+
     toast({
-      description: `Backup path: ${path}, Schedule: ${scheduleText}`,
-      duration: 3000,
+      description: "Looking for the specified directory...",
+      itemID: "schedule",
+      duration: 6000,
     });
+    await fetchAPI("/api/v1/scheduler/directory", "POST", { directory: path });
+
+    toast({
+      description: "Saving backup database...",
+      itemID: "schedule",
+      duration: Infinity,
+    });
+
+    const backup = await fetchAPI<{
+      backupFileDir: string;
+      backupDir: string;
+      backupFile: string;
+      message: string;
+      origDatabaseSize: number;
+    }>(`/api/v1/scheduler/backup`, "POST", {
+      server: server,
+      user: user,
+      password: password,
+      database: dbInput,
+      backupDir: path,
+    })
+      .then((res) => {
+        toast({
+          description: res.message,
+          itemID: "schedule",
+          duration: 3000,
+        });
+        return res;
+      })
+      .catch((error) => {
+        const errorMessage = error.message || "An error occurred.";
+        toast({
+          description: errorMessage,
+          itemID: "schedule",
+          duration: 5000,
+          variant: "destructive",
+        });
+      });
+
+    if (!backup) {
+      return;
+    }
+
+    toast({
+      description: "Compressing backup database...",
+      itemID: "schedule",
+      duration: Infinity,
+    });
+
+    const compressedDb = await fetchAPI<{
+      message: string;
+      completedAt: string;
+      driveSpace: string;
+      compressedSize: string;
+      originalSize: string;
+      backupFileDir: string;
+    }>("/api/v1/scheduler/compress", "POST", {
+      backupFileDir: backup.backupFileDir,
+      dbDir: backup.backupDir,
+      zipPassword: backupPassword,
+      originalDBSize: backup.origDatabaseSize,
+    })
+      .then((res) => {
+        toast({
+          description: "Compressed completed successfully.",
+          itemID: "schedule",
+          duration: 5000,
+          variant: "destructive",
+        });
+        return res;
+      })
+      .catch((error) => {
+        const errorMessage =
+          error.message || "Something went wrong, an error occurred.";
+        toast({
+          description: errorMessage,
+          itemID: "schedule",
+          duration: 5000,
+          variant: "destructive",
+        });
+        throw error;
+      });
+
+    if (!compressedDb) {
+      return;
+    }
+
+    toast({
+      description: "Sending email notification, please wait...",
+      itemID: "schedule",
+      duration: Infinity,
+    });
+
+    await fetchAPI("/api/v1/scheduler/email", "POST", {
+      backupFile: backup.backupFile,
+      completedAt: compressedDb.completedAt,
+      originalDBSize: compressedDb.originalSize,
+      compressedSize: compressedDb.compressedSize,
+      remainingStorage: compressedDb.driveSpace,
+    })
+      .then(() => {
+        toast({
+          description: "Email notification sent successfully.",
+          itemID: "schedule",
+          duration: 5000,
+        });
+        return;
+      })
+      .catch((error) => {
+        const errorMessage =
+          error.message || "Something went wrong, an error occurred.";
+        toast({
+          description: errorMessage,
+          itemID: "schedule",
+          duration: 5000,
+          variant: "destructive",
+        });
+        throw error;
+      });
   };
 
   const handleScheduleChange = (value: string) => {
@@ -100,13 +232,73 @@ export default function Scheduler() {
         <CardContent>
           <form className={styles.form}>
             <div className={styles.inputGroup}>
-              <Label htmlFor="path">Drive path</Label>
+              <Label htmlFor="path">Backup Drive path</Label>
               <Input
                 id="path"
                 type="text"
                 value={path}
                 onChange={(e) => setPath(e.target.value)}
                 placeholder="Enter backup save path"
+              />
+              {error && <p className={styles.error}>{error}</p>}
+            </div>
+
+            <div className={styles.inputGroup}>
+              <Label htmlFor="path">Database name</Label>
+              <Input
+                id="database"
+                type="text"
+                value={dbInput}
+                onChange={(e) => setDbInput(e.target.value)}
+                placeholder="Enter database name"
+              />
+              {error && <p className={styles.error}>{error}</p>}
+            </div>
+
+            <div className={styles.inputGroup}>
+              <Label htmlFor="path">Server name</Label>
+              <Input
+                id="server"
+                type="text"
+                value={server}
+                onChange={(e) => setServer(e.target.value)}
+                placeholder="Enter server name"
+              />
+              {error && <p className={styles.error}>{error}</p>}
+            </div>
+
+            <div className={styles.inputGroup}>
+              <Label htmlFor="path">User</Label>
+              <Input
+                id="user"
+                type="text"
+                value={user}
+                onChange={(e) => setUser(e.target.value)}
+                placeholder="Enter username"
+              />
+              {error && <p className={styles.error}>{error}</p>}
+            </div>
+
+            <div className={styles.inputGroup}>
+              <Label htmlFor="path">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password"
+              />
+              {error && <p className={styles.error}>{error}</p>}
+            </div>
+
+            <div className={styles.inputGroup}>
+              <Label htmlFor="path">Backup password</Label>
+              <Input
+                id="backup_password"
+                type="text"
+                value={backupPassword}
+                onChange={(e) => setBackupPassword(e.target.value)}
+                placeholder="Enter backup password"
               />
               {error && <p className={styles.error}>{error}</p>}
             </div>
