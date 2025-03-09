@@ -9,6 +9,16 @@
   gap: 2rem;
 }
 
+.tabs {
+  width: 100%;
+  background-color: var(--button-ghost-hover-background);
+}
+
+.tab:hover {
+  cursor: pointer;
+  /* background-color: var(--button-ghost-hover-background); */
+}
+
 .title {
   font-size: 2rem;
   font-weight: bold;
@@ -97,4 +107,17 @@
 .option:hover {
   background-color: var(--dropdown-hover-background);
   color: var(--dropdown-hover-foreground);
+}
+
+/*Delete tab starts here */
+
+.deleteButton {
+  padding: 8px 16px;
+  height: fit-content;
+  width: fit-content;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 1rem;
+  background-color: var(--button-fill-background);
+  color: var(--button-fill-foreground);
 }

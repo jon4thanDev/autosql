@@ -6,6 +6,7 @@ import { Button } from "../../components/ui/Button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -22,6 +23,12 @@ import {
 import { useToast } from "../../hooks/use-toast";
 import { Link } from "react-router-dom";
 import { fetchAPI } from "../../features/scheduler/utils/apiRequest";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../../components/ui/Tabs";
 
 const daysOfWeek = [
   { label: "S", id: "sunday" },
@@ -221,152 +228,221 @@ export default function Scheduler() {
     ));
   };
 
+  /**
+   * Delete plan starts here.
+   */
+  const handleOnDeletePlanClick = async () => {
+    toast({
+      description: "Deleting backup database...",
+      duration: Infinity,
+      itemID: "deleteSchedule",
+    });
+
+    await fetchAPI("/api/v1/scheduler/delete", "DELETE")
+      .then((res) => {
+        toast({
+          description: "Backup database deleted successfully.",
+          duration: 5000,
+          itemID: "deleteSchedule",
+        });
+        return res;
+      })
+      .catch((err) => {
+        const errorMessage = err.message || "An error occurred.";
+        toast({
+          description: errorMessage,
+          duration: 5000,
+          itemID: "deleteSchedule",
+          variant: "destructive",
+        });
+        throw err;
+      });
+  };
+
   return (
     <div className={styles.container}>
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-bold text-2xl">
-            Drive Data Sync Plan
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form className={styles.form}>
-            <div className={styles.inputGroup}>
-              <Label htmlFor="path">Backup Drive path</Label>
-              <Input
-                id="path"
-                type="text"
-                value={path}
-                onChange={(e) => setPath(e.target.value)}
-                placeholder="Enter backup save path"
-              />
-              {error && <p className={styles.error}>{error}</p>}
-            </div>
+      <Tabs defaultValue="backup">
+        <TabsList className={styles.tabs}>
+          <TabsTrigger value="backup" className={styles.tab}>
+            Backup
+          </TabsTrigger>
+          <TabsTrigger value="delete" className={styles.tab}>
+            Delete
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="backup">
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-bold text-2xl">Backup Plan</CardTitle>
+              <CardDescription>
+                Ensure data safety with scheduled backups and efficient <br />
+                compression strategies.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form className={styles.form}>
+                <div className={styles.inputGroup}>
+                  <Label htmlFor="path">Backup Drive path</Label>
+                  <Input
+                    id="path"
+                    type="text"
+                    value={path}
+                    onChange={(e) => setPath(e.target.value)}
+                    placeholder="Enter backup save path"
+                  />
+                  {error && <p className={styles.error}>{error}</p>}
+                </div>
 
-            <div className={styles.inputGroup}>
-              <Label htmlFor="path">Database name</Label>
-              <Input
-                id="database"
-                type="text"
-                value={dbInput}
-                onChange={(e) => setDbInput(e.target.value)}
-                placeholder="Enter database name"
-              />
-              {error && <p className={styles.error}>{error}</p>}
-            </div>
+                <div className={styles.inputGroup}>
+                  <Label htmlFor="path">Database name</Label>
+                  <Input
+                    id="database"
+                    type="text"
+                    value={dbInput}
+                    onChange={(e) => setDbInput(e.target.value)}
+                    placeholder="Enter database name"
+                  />
+                  {error && <p className={styles.error}>{error}</p>}
+                </div>
 
-            <div className={styles.inputGroup}>
-              <Label htmlFor="path">Server name</Label>
-              <Input
-                id="server"
-                type="text"
-                value={server}
-                onChange={(e) => setServer(e.target.value)}
-                placeholder="Enter server name"
-              />
-              {error && <p className={styles.error}>{error}</p>}
-            </div>
+                <div className={styles.inputGroup}>
+                  <Label htmlFor="path">Server name</Label>
+                  <Input
+                    id="server"
+                    type="text"
+                    value={server}
+                    onChange={(e) => setServer(e.target.value)}
+                    placeholder="Enter server name"
+                  />
+                  {error && <p className={styles.error}>{error}</p>}
+                </div>
 
-            <div className={styles.inputGroup}>
-              <Label htmlFor="path">User</Label>
-              <Input
-                id="user"
-                type="text"
-                value={user}
-                onChange={(e) => setUser(e.target.value)}
-                placeholder="Enter username"
-              />
-              {error && <p className={styles.error}>{error}</p>}
-            </div>
+                <div className={styles.inputGroup}>
+                  <Label htmlFor="path">User</Label>
+                  <Input
+                    id="user"
+                    type="text"
+                    value={user}
+                    onChange={(e) => setUser(e.target.value)}
+                    placeholder="Enter username"
+                  />
+                  {error && <p className={styles.error}>{error}</p>}
+                </div>
 
-            <div className={styles.inputGroup}>
-              <Label htmlFor="path">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password"
-              />
-              {error && <p className={styles.error}>{error}</p>}
-            </div>
+                <div className={styles.inputGroup}>
+                  <Label htmlFor="path">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter password"
+                  />
+                  {error && <p className={styles.error}>{error}</p>}
+                </div>
 
-            <div className={styles.inputGroup}>
-              <Label htmlFor="path">Backup password</Label>
-              <Input
-                id="backup_password"
-                type="text"
-                value={backupPassword}
-                onChange={(e) => setBackupPassword(e.target.value)}
-                placeholder="Enter backup password"
-              />
-              {error && <p className={styles.error}>{error}</p>}
-            </div>
+                <div className={styles.inputGroup}>
+                  <Label htmlFor="path">Backup password</Label>
+                  <Input
+                    id="backup_password"
+                    type="text"
+                    value={backupPassword}
+                    onChange={(e) => setBackupPassword(e.target.value)}
+                    placeholder="Enter backup password"
+                  />
+                  {error && <p className={styles.error}>{error}</p>}
+                </div>
 
-            <div className={styles.inputGroup}>
-              <Label htmlFor="schedule">Backup Schedule:</Label>
-              <Select onValueChange={handleScheduleChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select time interval" />
-                </SelectTrigger>
-                <SelectContent className={styles.selectContainer}>
-                  <SelectGroup>
-                    <SelectItem value="daily" className={styles.option}>
-                      Daily
-                    </SelectItem>
-                    <SelectItem value="weekly" className={styles.option}>
-                      Weekly
-                    </SelectItem>
-                    <SelectItem value="monthly" className={styles.option}>
-                      Monthly
-                    </SelectItem>
-                    <SelectItem value="yearly" className={styles.option}>
-                      Yearly
-                    </SelectItem>
-                    <SelectItem value="custom" className={styles.option}>
-                      Custom
-                    </SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+                <div className={styles.inputGroup}>
+                  <Label htmlFor="schedule">Backup Schedule:</Label>
+                  <Select onValueChange={handleScheduleChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select time interval" />
+                    </SelectTrigger>
+                    <SelectContent className={styles.selectContainer}>
+                      <SelectGroup>
+                        <SelectItem value="daily" className={styles.option}>
+                          Daily
+                        </SelectItem>
+                        <SelectItem value="weekly" className={styles.option}>
+                          Weekly
+                        </SelectItem>
+                        <SelectItem value="monthly" className={styles.option}>
+                          Monthly
+                        </SelectItem>
+                        <SelectItem value="yearly" className={styles.option}>
+                          Yearly
+                        </SelectItem>
+                        <SelectItem value="custom" className={styles.option}>
+                          Custom
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
 
-              <Card
-                style={{
-                  height: schedule === "custom" ? "auto" : "0px",
-                  overflow: "hidden",
-                  transition: "height 0.3s ease-in-out",
-                  border:
-                    schedule === "custom"
-                      ? "1px var(--card-border-color) solid"
-                      : "none",
-                  boxShadow: schedule === "custom" ? "shadow-sm" : "none",
-                }}
+                  <Card
+                    style={{
+                      height: schedule === "custom" ? "auto" : "0px",
+                      overflow: "hidden",
+                      transition: "height 0.3s ease-in-out",
+                      border:
+                        schedule === "custom"
+                          ? "1px var(--card-border-color) solid"
+                          : "none",
+                      boxShadow: schedule === "custom" ? "shadow-sm" : "none",
+                    }}
+                  >
+                    <CardContent className="p-2 grid gap-x-2 grid-cols-7">
+                      {renderScheduleButtons()}
+                    </CardContent>
+                  </Card>
+                </div>
+              </form>
+            </CardContent>
+            <CardFooter className={styles.footer}>
+              <Button
+                type="button"
+                variant="destructive"
+                className={styles.cancelLink}
               >
-                <CardContent className="p-2 grid gap-x-2 grid-cols-7">
-                  {renderScheduleButtons()}
-                </CardContent>
-              </Card>
-            </div>
-          </form>
-        </CardContent>
-        <CardFooter className={styles.footer}>
-          <Button
-            type="button"
-            variant="destructive"
-            className={styles.cancelLink}
-          >
-            <Link to={ROUTES.ROOT}>Cancel</Link>
-          </Button>
-          <Button
-            type="button"
-            variant="default"
-            className={styles.scheduleButton}
-            onClick={handleSubmit}
-          >
-            Save Schedule
-          </Button>
-        </CardFooter>
-      </Card>
+                <Link to={ROUTES.ROOT}>Cancel</Link>
+              </Button>
+              <Button
+                type="button"
+                variant="default"
+                className={styles.scheduleButton}
+                onClick={handleSubmit}
+              >
+                Save Schedule
+              </Button>
+            </CardFooter>
+          </Card>
+        </TabsContent>
+        <TabsContent value="delete">
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-bold text-2xl">
+                Delete Backup Plan
+              </CardTitle>
+              <CardDescription>
+                Safely clean up old backups while preserving essential data.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className={styles.footer}>
+                <Button
+                  type="button"
+                  variant="default"
+                  className={styles.deleteButton}
+                  onClick={handleOnDeletePlanClick}
+                >
+                  Delete
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
